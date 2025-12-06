@@ -39,18 +39,13 @@ confidence_level = 0.8
 
 
 found_stat_nums = {
-    0: [],
-    1: [],
-    2: [],
-    3: [],
-    4: [],
-    5: [],
-    6: [],
-    7: [],
-    8: [],
-    9: [],
+    "Speed" : [],
+    "Stam" : [],
+    "Power" : [],
+    "Guts" : [],
+    "Wit" : [],
+    "Skill Pts" : []
 }
-pyautogui.moveTo(199+350, 3+900)
 statsCheck = pyautogui.screenshot("statsCheck.png", region=[round(350*screenRatio),round(900*screenRatio), round(750*screenRatio), round(35*screenRatio)])
 
 statsCheck = statsCheck.convert('L')
@@ -58,7 +53,7 @@ statsCheck = ImageOps.colorize(statsCheck,[0, 0, 0], [255, 255, 255], blackpoint
 statsCheck.save('greysacale.png')
 
 for i in range(10): 
-    img_path = f'refrence-imgs/numbers/{i}.jpg'
+    img_path = f'refrence-imgs/numbers/{i}.png'
     img = Image.open(img_path)
     img = ImageOps.scale(img, screenRatio)
     img = img.convert('L')
@@ -69,24 +64,20 @@ for i in range(10):
             last_entry = {
                 'left': 0,
                 'top': 0,
+                'value': None,
                 'stat': ''
             }
             for location in pyautogui.locateAll(img, statsCheck, confidence=confidence_level):
                 placement = check_stat_placement(location.left)
                 if (location.left - last_entry['left']) > 1 and (placement != last_entry['stat']):
-                    found_stat_nums[i].append( 
-                                        {
-                                            'id': j,
-                                            'left': location.left,
-                                            'top': location.top,
-                                            'stat': placement
-                                        })
                     last_entry = {
                                             'id': j,
                                             'left': location.left,
                                             'top': location.top,
+                                            'value': i,
                                             'stat': placement
-                                        }
+                                }
+                    found_stat_nums[placement].append(last_entry)
                     print(placement)
                 else:
                     print("")
@@ -101,19 +92,58 @@ for i in range(10):
         pass
 print(found_stat_nums)
 print("")
-for i in range(len(found_stat_nums)):
-    match len(found_stat_nums[i]): 
-        case 1:
-            print(f"there is 1 instance of the number {i}")
-            print(f"its in the: {found_stat_nums[i][0]['stat']}")
-            print("")
-        case 2:
-            print(f"there is 2 instance of the number {i}")
-            for entry in found_stat_nums[i]:
-                print(f"    Theres 1 in {entry['stat']}")
-            print("")
-        case _:
-            pass
+
+for stat in found_stat_nums:
+    message = f'The value(s) in {stat} is: '
+
+    for number in found_stat_nums[stat]:
+
+        match number['value']:
+
+            case 0:
+                message += f"{number['value']}"
+            case 1:
+                message += f" {number['value']}"
+            case 2:
+                message += f" {number['value']}"
+            case 3:
+                message += f" {number['value']}"
+            case 4:
+                message += f" {number['value']}"
+            case 5:
+                message += f" {number['value']}"
+            case 6:
+                message += f" {number['value']}"
+            case 7:
+                message += f" {number['value']}"
+            case 8:
+                message += f" {number['value']}"
+            case 9:
+                message += f" {number['value']}"
+    if message != f'The value(s) in {stat} is: ':
+        print(message + "\n")
+    else:
+        pass
+    pass
+
+
+# 'id': j,
+# 'left': location.left,
+# 'top': location.top,
+# 'stat': placement
+
+    # match len(found_stat_nums[i]): 
+    #     case 1:
+    #         print(f"there is 1 instance of the number {i}")
+    #         print(f"its in the: {found_stat_nums[i][0]['stat']}")
+    #         print("")
+    #     case 2:
+    #         print(f"there is 2 instance of the number {i}")
+    #         for entry in found_stat_nums[i]:
+    #             print(f"    Theres 1 in {entry['stat']}")
+    #         print("")
+    #     case _:
+    #         pass
 
 
 
