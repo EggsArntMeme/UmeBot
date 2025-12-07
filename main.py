@@ -4,6 +4,14 @@ import numpy as np
 from PIL import Image, ImageOps
 screenRatio = 1
 # input()
+    
+
+# Saves mouse position each enter key input (exits when 3 is entered)
+
+# while(input('enter:  3   to exit\n') != '3'):
+#     bruhclick = pyautogui.position()
+#     print(bruhclick)
+#     print(pyautogui.pixel(bruhclick.x, bruhclick.y))
 
 def check_stat_placement(left): 
     match left:
@@ -19,113 +27,82 @@ def check_stat_placement(left):
             return "Wit"
         case n if 600*screenRatio <= n <= 750*screenRatio:
             return "Skill Pts"
-           
+    
 
-statsCheck = pyautogui.screenshot("statsCheck.png", region=[round(350*screenRatio),round(900*screenRatio), round(750*screenRatio), round(35*screenRatio)])
+def collectStatBuffs():
 
-statsCheck = statsCheck.convert('L')
-statsCheck = ImageOps.colorize(statsCheck,[0, 0, 0], [255, 255, 255], blackpoint=100)
-statsCheck.save('greysacale.png')
+    confidence_level = 0.8
+    found_stat_nums = {
+        "Speed" : [],
+        "Stam" : [],
+        "Power" : [],
+        "Guts" : [],
+        "Wit" : [],
+        "Skill Pts" : []
+    }
+    statsCheck = pyautogui.screenshot("statsCheck.png", region=[round(350*screenRatio),round(900*screenRatio), round(750*screenRatio), round(35*screenRatio)])
+    statsCheck = statsCheck.convert('L')
+    statsCheck = ImageOps.colorize(statsCheck,[0, 0, 0], [255, 255, 255], blackpoint=200)
+    statsCheck.save('greysacale.png')
+
+    for i in range(10): 
+        img_path = f'refrence-imgs/numbers/{i}.png'
+        img = Image.open(img_path)
+        img = ImageOps.scale(img, screenRatio)
+        img = img.convert('L')
+        img = ImageOps.colorize(img,[0, 0, 0], [255, 255, 255], blackpoint=200)
+        try:
+            if pyautogui.locate(img, statsCheck, confidence=confidence_level):
+                j = 0
+                last_entry = {
+                    'left': 0,
+                    'top': 0,
+                    'value': None,
+                    'stat': ''
+                }
+                for location in pyautogui.locateAll(img, statsCheck, confidence=confidence_level):
+                    placement = check_stat_placement(location.left)
+                    if (location.left - last_entry['left']) > 1 and (placement != last_entry['stat']):
+                        last_entry = {
+                                                'id': j,
+                                                'left': location.left,
+                                                'top': location.top,
+                                                'value': i,
+                                                'stat': placement
+                                    }
+                        found_stat_nums[placement].append(last_entry)
+                    else:
+                        print("")
+                        print("FAILED CHECK")
+                        print(f"OWN: {location}")
+                        print(placement + f" | Value: {i}")
+                        print("")
+                    j += 1
+                    pass
+        except ImageNotFoundException:
+            # print(f"there is no instance of {i+1}.")
+            pass
+    print("")
 
 
 
+    return found_stat_nums
 
-# while(input('enter:  3   to exit\n') != '3'):
-#     bruhclick = pyautogui.position()
-#     print(bruhclick)
-#     print(pyautogui.pixel(bruhclick.x, bruhclick.y))
-
-confidence_level = 0.8
+if __name__ == "__main__":
+    found_stat_nums = collectStatBuffs()
 
 
-found_stat_nums = {
-    "Speed" : [],
-    "Stam" : [],
-    "Power" : [],
-    "Guts" : [],
-    "Wit" : [],
-    "Skill Pts" : []
-}
-statsCheck = pyautogui.screenshot("statsCheck.png", region=[round(350*screenRatio),round(900*screenRatio), round(750*screenRatio), round(35*screenRatio)])
+    for stat in found_stat_nums:
+        message = f'The value(s) in {stat} is: '
 
-statsCheck = statsCheck.convert('L')
-statsCheck = ImageOps.colorize(statsCheck,[0, 0, 0], [255, 255, 255], blackpoint=200)
-statsCheck.save('greysacale.png')
+        for number in found_stat_nums[stat]:
 
-for i in range(10): 
-    img_path = f'refrence-imgs/numbers/{i}.png'
-    img = Image.open(img_path)
-    img = ImageOps.scale(img, screenRatio)
-    img = img.convert('L')
-    img = ImageOps.colorize(img,[0, 0, 0], [255, 255, 255], blackpoint=200)
-    try:
-        if pyautogui.locate(img, statsCheck, confidence=confidence_level):
-            j = 0
-            last_entry = {
-                'left': 0,
-                'top': 0,
-                'value': None,
-                'stat': ''
-            }
-            for location in pyautogui.locateAll(img, statsCheck, confidence=confidence_level):
-                placement = check_stat_placement(location.left)
-                if (location.left - last_entry['left']) > 1 and (placement != last_entry['stat']):
-                    last_entry = {
-                                            'id': j,
-                                            'left': location.left,
-                                            'top': location.top,
-                                            'value': i,
-                                            'stat': placement
-                                }
-                    found_stat_nums[placement].append(last_entry)
-                    print(placement)
-                else:
-                    print("")
-                    print("FAILED")
-                    print(f"OWN: {location}")
-                    print(placement)
-                    print("")
-                j += 1
-                pass
-    except ImageNotFoundException:
-        # print(f"there is no instance of {i+1}.")
+            message += f" {number['value']}"
+        if message != f'The value(s) in {stat} is: ':
+            print(message + "\n")
+        else:
+            pass
         pass
-print(found_stat_nums)
-print("")
-
-for stat in found_stat_nums:
-    message = f'The value(s) in {stat} is: '
-
-    for number in found_stat_nums[stat]:
-
-        match number['value']:
-
-            case 0:
-                message += f"{number['value']}"
-            case 1:
-                message += f" {number['value']}"
-            case 2:
-                message += f" {number['value']}"
-            case 3:
-                message += f" {number['value']}"
-            case 4:
-                message += f" {number['value']}"
-            case 5:
-                message += f" {number['value']}"
-            case 6:
-                message += f" {number['value']}"
-            case 7:
-                message += f" {number['value']}"
-            case 8:
-                message += f" {number['value']}"
-            case 9:
-                message += f" {number['value']}"
-    if message != f'The value(s) in {stat} is: ':
-        print(message + "\n")
-    else:
-        pass
-    pass
-
 
 # 'id': j,
 # 'left': location.left,
