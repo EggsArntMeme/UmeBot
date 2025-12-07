@@ -40,9 +40,9 @@ def collectStatBuffs():
         "Wit" : [],
         "Skill Pts" : []
     }
-    statsCheck = pyautogui.screenshot("statsCheck.png", region=[round(350*screenRatio),round(900*screenRatio), round(750*screenRatio), round(35*screenRatio)])
+    statsCheck = pyautogui.screenshot("statsCheck.png", region=[round(350*screenRatio),round(895*screenRatio), round(750*screenRatio), round(45*screenRatio)])
     statsCheck = statsCheck.convert('L')
-    statsCheck = ImageOps.colorize(statsCheck,[0, 0, 0], [255, 255, 255], blackpoint=200)
+    statsCheck = ImageOps.colorize(statsCheck,[0, 0, 0], [255, 255, 255], blackpoint=230)
     statsCheck.save('greysacale.png')
 
     for i in range(10): 
@@ -50,7 +50,7 @@ def collectStatBuffs():
         img = Image.open(img_path)
         img = ImageOps.scale(img, screenRatio)
         img = img.convert('L')
-        img = ImageOps.colorize(img,[0, 0, 0], [255, 255, 255], blackpoint=200)
+        img = ImageOps.colorize(img,[0, 0, 0], [255, 255, 255], blackpoint=230)
         try:
             if pyautogui.locate(img, statsCheck, confidence=confidence_level):
                 j = 0
