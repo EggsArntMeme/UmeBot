@@ -16,7 +16,7 @@ Specifically on the collection of the stat increases on the training screen
 
 ## Road Map
 - Data Collection
-  - Collect Training Stat Increases
+  - Collect Training Stat Increases   <- (currently on this)
   - Collect Energy
   - Collect Friendship Level (and which friends are on what training)
   - Collect Mood Level
